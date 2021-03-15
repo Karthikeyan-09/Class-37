@@ -1,48 +1,31 @@
-var ball;
-var database, position;
-var ballImg, bg;
+var database;
+var form, player, game;
+var gameState =0;
+var playerCount =0; 
+var allPlayers;
+var bg;
+var car1, car2, cars=[]
+
 
 function preload() {
-    ballImg = loadImage("spiderman.png");
-    bg = loadImage("city day.jpg");
+bg = loadImage("bg.jpg");
 }
-function setup(){
-    createCanvas(500,500);
-    ball = createSprite(250,250,10,10);
-    ball.shapeColor = "red";
-    database= firebase.database();
-    var dbref = database.ref('BallPosition');
-    dbref.on("value", readData);
-    ball.addImage(ballImg);
+function setup() {
+createCanvas(displayWidth,displayHeight);
+database = firebase.database();
+game = new Game();
+game.getState();
+game.start();
 }
 
-function draw(){
+function draw() {
     background(bg);
-    
-    if(keyDown(LEFT_ARROW)){
-        changePosition(-1,0);
+    if(playerCount === 2) {
+        game.update(1);
     }
-    else if(keyDown(RIGHT_ARROW)){
-        changePosition(1,0);
-    }
-    else if(keyDown(UP_ARROW)){
-        changePosition(0,-1);
-    }
-    else if(keyDown(DOWN_ARROW)){
-        changePosition(0,+1);
-    }
-    drawSprites();
-}
 
-function changePosition(x,y){
-    database.ref('BallPosition').set({
-    x : ball.x+x,
-    y : ball.y+y
-    });
-}
-
-function readData(info) {
-    position = info.val();
-    ball.x = position.x;
-    ball.y = position.y;
+    if(gameState === 1) {
+        clear();
+        game.play();
+    }
 }
